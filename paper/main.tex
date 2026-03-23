@@ -1,0 +1,195 @@
+% !TEX program = xelatex
+\documentclass[UTF8,a4paper,12pt]{ctexart}
+
+\usepackage[a4paper,top=2.54cm,bottom=2.54cm,left=3.175cm,right=3.175cm]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{tikz}
+
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+\setstretch{1.5}
+
+\begin{document}
+
+% ==================== 封面（按 Word 模板） ====================
+\begin{titlepage}
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north west,inner sep=0pt,xshift=0.6cm,yshift=-0.6cm] at (current page.north west)
+      {\includegraphics[width=6cm]{image.png}};
+  \end{tikzpicture}
+
+  \centering
+  \vspace*{0.17\paperheight}
+  {\zihao{-0}\bfseries 《数学建模基础实践创新》\par}
+  \vspace{1.2em}
+  {\zihao{2}\bfseries 大作业\par}
+
+  \vspace{3.2cm}
+  {\zihao{4}\bfseries \makebox[\textwidth][l]{题目：基于状态空间搜索与MILP的单/多玩家沙漠生存博弈寻优}\par}
+
+  \vspace{2.2cm}
+  \raggedright
+  \zihao{4}
+  \mbox{学生1（学号\quad 姓名）：25051025 曾建凯}{\makebox[0.60\textwidth][l]{\hfill}}\par
+  \vspace{1.3em}
+  \mbox{学生2（学号\quad 姓名）：25050000 应子旭}{\makebox[0.60\textwidth][l]{\hfill}}\par
+  \vspace{1.3em}
+  \mbox{学生3（学号\quad 姓名）：25000000 薛涵涵}{\makebox[0.60\textwidth][l]{\hfill}}\par
+
+\end{titlepage}
+
+% ==================== 正文模板（按 Word 模板） ====================
+\section*{\zihao{4}\mbox{题目：基于状态空间搜索与MILP的单/多玩家沙漠生存博弈寻优}}
+\vspace{1.5em}
+
+\section*{摘要}
+请在此填写摘要内容。摘要建议包含研究目标、建模方法、主要结果和结论。
+
+\vspace{1.2em}
+\noindent\textbf{关键词：} 关键词1；关键词2；关键词3
+
+\vspace{1.5em}
+
+
+\section{问题重述}
+
+\subsection{问题背景与优化目标}
+本项目考察的是一个带有资源调度与路径规划性质的沙漠生存游戏。玩家需要凭借一张地图，从起点出发，利用初始资金购买特定数量的水和食物，途经不同的地形区域（如普通节点、矿山、村庄），最终在规定的截止日期或之前抵达终点。本题的优化目标是：在确保玩家成功存活并按时到达终点的前提下，通过合理规划行进路线与物资调度，使得游戏结束时\textbf{保留尽可能多的资金}。
+
+\subsection{核心规则与约束条件}
+玩家在游戏中的决策受到以下多重物理与规则约束：
+\begin{itemize}
+    \item \textbf{负重与生存约束：} 每天玩家拥有的水和食物质量之和不能超过负重上限。若未到达终点而水或食物已耗尽，视为游戏失败。
+    \item \textbf{天气与环境影响：} 每天的天气为“晴朗”、“高温”、“沙暴”三种状况之一。沙暴日玩家必须在原地停留。
+    \item \textbf{节点交互系统：} 第0天可在起点处用初始资金以基准价格购买水和食物，但不能多次购买；在村庄停留时可用剩余资金随时购买水和食物，每箱价格为基准价格的2倍；在矿山停留可通过挖矿获得资金，但到达矿山当天不能挖矿；到达终点后可退回剩余的水和食物，每箱退回价格为基准价格的一半。
+    \item \textbf{消耗倍率：} 玩家在原地停留一天消耗的资源数量为基础消耗量，行走一天消耗的资源数量为基础消耗量的2倍，挖矿消耗的资源数量为基础消耗量的3倍。
+\end{itemize}
+
+\subsection{问题一的具体任务}
+问题一设定为\textbf{假设只有一名玩家}，且属于全局确定性环境（即\textbf{在整个游戏时段内每天天气状况事先全部已知}）。任务要求建立数学模型，给出一般情况下玩家的最优策略，并利用该模型求解附件中的“第一关”和“第二关”。
+\section{问题分析}
+
+\subsection{问题一的分析}
+问题一要求在全局天气信息完全已知的情况下，为单名玩家制定使得最终保留资金最大化的行动策略。针对该问题，我们从以下四个维度展开分析：
+
+\subsubsection{问题特征分析}
+本问题是一个典型的\textbf{确定性多阶段离散状态转移问题}。在“第一关”与“第二关”的设定中，玩家在整个游戏周期（30天）内面临的环境参数（每日天气序列、地图节点拓扑、基础物价等）完全已知且固定，不存在随机变量或概率博弈。因此，该问题本质上是在带权有向图的时间扩展网络上寻找满足约束条件的最优路径。
+
+\subsubsection{关键变量界定}
+为了精确描述玩家的状态转移，需要追踪的核心变量包括：
+\begin{itemize}
+    \item \textbf{时空变量：} 当前所处天数 $t$ 以及玩家当天所在的地图节点 $i$。
+    \item \textbf{决策变量：} 玩家每日采取的具体动作（停留、行走或挖矿），以及在特定节点（起点或村庄）的物资购买量。
+    \item \textbf{状态变量：} 每日结算后的剩余资金量 $M_t$、水量 $W_t$ 与食物量 $F_t$。
+\end{itemize}
+
+\subsubsection{模型难点剖析}
+本题的核心难点在于\textbf{多重物理约束的强耦合性}与\textbf{非线性逻辑}的转化：
+\begin{itemize}
+    \item \textbf{负重与消耗的博弈：} 负重上限（1200 kg）严格限制了玩家的单次续航能力，而不同天气（晴朗、高温、沙暴）和不同动作（消耗倍率1倍至3倍不等）会导致资源消耗呈动态变化。玩家必须在“携带重物缓慢行进”与“轻装上阵依赖沿途高价补给”之间寻找平衡点。
+    \item \textbf{非线性逻辑条件：} “沙暴日强制停留”、“仅能在村庄随时购买且价格翻倍”、“到达矿山首日不可挖矿”等游戏规则构成复杂条件约束。若直接采用传统公式表达，易导致模型非线性化并增加求解难度。
+\end{itemize}
+
+\subsubsection{可行求解思路}
+鉴于时间跨度（30天）与空间节点（关卡一27个，关卡二64个）的规模均在有限可控范围内，且全局信息确定，我们排除启发式算法，采用\textbf{混合整数线性规划（MILP）模型}进行全局精确求解。
+具体而言，引入0-1整数变量刻画玩家每日的位置与离散动作，并利用\textbf{大 M 法（Big-M Method）}将村庄购买等条件判断（If-Else逻辑）转化为线性不等式约束。最后，以游戏终局资金与折现物资价值总和最大化为目标函数，建立全局规划模型，确保所得策略具有理论最优性。
+
+\section{模型假设}
+鉴于题目中已经给出了较为详尽的物理约束与游戏规则，为了确保数学模型的严谨性与求解的可行性，我们对实际游戏过程中的部分隐性条件进行如下合理假设：
+
+\begin{enumerate}
+    \item \textbf{假设玩家具有完全理性：} 玩家在整个游戏过程中具有全局最优视野，始终以最终保留资金最大化为唯一目标进行决策，不存在操作失误或非理性的随意探索行为。
+    \item \textbf{假设物资交易行为瞬间完成：} 玩家在起点或村庄购买水和食物时 [cite: 11, 13]，交易过程不额外消耗当天的行动时间。同时假设村庄的物资储备无限大，不受其他因素影响。
+    \item \textbf{假设资源在储存与携带过程中无额外非线性损耗：} 水和食物除了按照每日天气和行动状态的设定被消耗外 [cite: 10]，不会因天气炎热、沙暴环境或存储时间过长而发生自然蒸发、变质或意外丢失。
+    \item \textbf{假设行动状态具有时间离散性与动作互斥性：} 以“天”为最小不可分割的时间单位 [cite: 6]，玩家每天只能在“停留”、“行走”和“挖矿”中选择唯一一种作为当天的动作，不可将一天的时间拆分进行多种动作叠加。
+\end{enumerate}
+
+\section{符号说明}
+\begin{table}[H]
+  \centering
+  \renewcommand{\arraystretch}{1.3}
+  \begin{tabular}{|>{\centering\arraybackslash}m{0.25\textwidth}|>{\centering\arraybackslash}m{0.6\textwidth}|}
+    \hline
+    \textbf{符号} & \textbf{说明} \\
+    \hline
+    $x_i$ & 第$i$个决策变量 \\
+    \hline
+    $f(\bm{x})$ & 目标函数 \\
+    \hline
+    $c_{ij}$ & 参数（示例） \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\section{模型的建立与求解}
+
+\subsection{问题1的模型建立与求解}
+
+针对问题一（单人、全局天气已知），我们以最终保留资金最大化为目标，将复杂的物理规则转化为代数不等式，构建了混合整数线性规划（MILP）模型。
+
+\subsubsection{决策变量的设定}
+为了精确刻画玩家的时空状态与资源流转，我们设定以下三类变量：
+\begin{itemize}
+    \item \textbf{位置变量：} 设 $x_{i,t} \in \{0,1\}$ 为 0-1 变量，若玩家在第 $t$ 天结束时位于节点 $i$，则 $x_{i,t} = 1$，否则为 $0$。
+    \item \textbf{动作变量：} 设 $stay_t, move_t, mine_t \in \{0,1\}$ 分别表示玩家在第 $t$ 天选择“停留”、“行走”或“挖矿”。
+    \item \textbf{状态与交易变量：} 设连续变量 $W_t, F_t, M_t$ 分别表示第 $t$ 天结束时的水量、食物量和资金量；设整数变量 $BuyW_t, BuyF_t$ 分别表示第 $t$ 天购买的水和食物箱数。
+\end{itemize}
+
+\subsubsection{目标函数}
+我们的优化目标是使得游戏结束（第 $T$ 天）时的总资产（含物资折现）最大化。根据规则，终点剩余物资可以基准价的 0.5 倍退回。目标函数为：
+$$ \max Z = M_T + 0.5 \cdot p_W W_T + 0.5 \cdot p_F F_T $$
+其中，$p_W$ 与 $p_F$ 分别为水和食物的基准价格。
+
+\subsubsection{约束条件推导}
+
+\textbf{1. 动作互斥与空间拓扑约束} \\
+每天玩家必须且只能执行一种动作，且同一天只能位于一个节点：
+$$ stay_t + move_t + mine_t = 1 $$
+$$ \sum_{i \in V} x_{i,t} = 1 $$
+玩家若要移动，必须沿着相邻边进行。设 $N(i)$ 为节点 $i$ 的相邻节点集合，状态转移必须满足：
+$$ x_{i,t} \le x_{i,t-1} + \sum_{j \in N(i)} x_{j,t-1} $$
+
+\textbf{2. 天气与特殊动作约束} \\
+设第 $t$ 天的天气状态为 $Weather_t$（1为晴朗，2为高温，3为沙暴）。当遇到沙暴时，禁止移动：
+$$ \text{若 } Weather_t = 3 \text{, 则 } move_t = 0 $$
+同时，玩家只有前一天处于矿山集合 $S_{mine}$ 中，当天才能进行挖矿动作：
+$$ mine_t \le \sum_{m \in S_{mine}} x_{m,t-1} $$
+
+\textbf{3. 村庄交易的线性化约束（大M法）} \\
+玩家仅能在处于村庄集合 $S_{village}$ 时购买物资。为了避免变量相乘导致的非线性，引入充分大的正常数 $K$，建立约束：
+$$ BuyW_t + BuyF_t \le K \sum_{v \in S_{village}} x_{v,t} $$
+
+\textbf{4. 负重与状态转移约束} \\
+水（3 kg/箱）和食物（2 kg/箱）的总质量不能超过 1200 kg 负重上限：
+$$ 3 W_t + 2 F_t \le 1200 $$
+每日物资储备由前日余量、当日购买量及动作消耗量决定（设 $C_W, C_F$ 为基于天气的基础消耗）：
+$$ W_t = W_{t-1} + BuyW_t - C_W (stay_t + 2 move_t + 3 mine_t) $$
+$$ F_t = F_{t-1} + BuyF_t - C_F (stay_t + 2 move_t + 3 mine_t) $$
+资金更新则需考虑挖矿的基础收益 $I_{base}$ 及村庄的双倍购买花销：
+$$ M_t = M_{t-1} + mine_t \cdot I_{base} - 2 (p_W BuyW_t + p_F BuyF_t) $$
+
+\subsubsection{模型求解与结果分析}
+利用 Python 中的 PuLP 库调用底层运筹学求解器对上述 MILP 模型进行求解。
+
+\textbf{第一关求解结果：}
+在第一关的设定下，求解器寻找到的理论最优策略可保留最高资金为 \textbf{10740 元}。最优路径策略为玩家在第0天于起点购买 182 箱水和 327 箱食物，随后前往 12 号矿山进行多日连续挖矿以积累资金，最终在第24天途径 15 号村庄补充 62 箱水和 45 箱食物后，于第29天安全抵达 27 号终点；第30天资金保持不变，表明玩家已处于终点停留状态。
+
+\textbf{第二关求解结果：}
+在第二关的设定下，求解器寻找到的理论最优策略可保留最高资金为 \textbf{12730 元}。最优路径策略为玩家在第0天于起点购买 130 箱水和 405 箱食物，随后前往 55 号矿山进行多日连续挖矿以积累资金，最终在第19天途径 62 号村庄补充 157 箱水和 86 箱食物后，于第30天安全抵达 64 号终点且水与食物恰好耗尽。
+
+\section{模型评价与改进}
+\subsection{模型的优点}
+可从可解释性、泛化性、计算效率等方面阐述。
+
+\subsection{模型的缺点}
+说明模型局限和可能引入误差的环节。
+
+\subsection{模型的改进}
+提出后续改进方向，如数据增强、参数优化、多目标扩展等。
+
+\end{document}
