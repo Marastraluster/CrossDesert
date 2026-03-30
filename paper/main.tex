@@ -9,6 +9,8 @@
 \usepackage{float}
 \usepackage{setspace}
 \usepackage{tikz}
+\usepackage{float}
+
 
 \setlength{\parindent}{2em}
 \setlength{\parskip}{0pt}
@@ -137,12 +139,11 @@
 \end{enumerate}
 
 
-\begin{samepage}
-\section{符号说明}
 
+\section{符号说明}
 本文模型建立与求解过程中所使用的主要符号及其说明如表1所示。
 
-\begin{table}[htbp]
+\begin{table}[H]
     \centering
     \caption{主要符号说明}
     \label{tab:symbols}
@@ -154,102 +155,298 @@
         \midrule
         \multicolumn{2}{c}{\textbf{集合与索引参数}} \\
         \midrule
-        $t$ & 天数索引，$t \in \{0, 1, \dots, T\}$，其中 $T$ 为截止日期 [cite: 5667, 5671] \\
-        $i, j, v, m$ & 地图节点索引 [cite: 5667, 5682] \\
-        $N(i)$ & 节点 $i$ 的相邻节点集合 [cite: 5682] \\
-        $S_{mine}, S_{village}$ & 矿山节点集合与村庄节点集合 [cite: 5687, 5690] \\
-        $\Omega$ & 天气状态集合，例如 \{晴朗, 高温, 沙暴\} [cite: 5721] \\
-        $\mathcal{A}, \mathcal{A}(i)$ & 可行动作集合与节点 $i$ 处的可行动作集合 [cite: 5734, 5769] \\
+        $t$ & 天数索引，$t \in \{0, 1, \dots, T\}$，其中 $T$ 为截止日期 \\
+        $i, j, v, m$ & 地图节点索引  \\
+        $N(i)$ & 节点 $i$ 的相邻节点集合 \\
+        $S_{mine}, S_{village}$ & 矿山节点集合与村庄节点集合  \\
+        $\Omega$ & 天气状态集合，例如 \{晴朗, 高温, 沙暴\}  \\
+        $\mathcal{A}, \mathcal{A}(i)$ & 可行动作集合与节点 $i$ 处的可行动作集合  \\
         \midrule
         \multicolumn{2}{c}{\textbf{决策与状态变量}} \\
         \midrule
-        $x_{i,t}$ & 0-1 变量，若第 $t$ 天结束时玩家位于节点 $i$ 取1，否则取0 [cite: 5667] \\
-        $stay_t, move_t, mine_t$ & 0-1 变量，分别表示第 $t$ 天采取“停留”、“行走”或“挖矿”动作 [cite: 5668] \\
-        $BuyW_t, BuyF_t$ & 整数变量，第 $t$ 天在特定节点（起点或村庄）购买的水和食物箱数 [cite: 5669] \\
-        $W_0, F_0$ & 第 0 天在起点初始购买的水和食物箱数 [cite: 5800] \\
-        $W_t, F_t, M_t$ & 连续变量，第 $t$ 天（结束或决策时）的水量、食物量和资金量 [cite: 5669, 5714] \\
-        $a_t$ & 玩家在第 $t$ 天选择采取的离散动作 [cite: 5742] \\
-        $i_t, \omega_t$ & 第 $t$ 天玩家所在的节点以及当天的天气状态 [cite: 5713, 5717] \\
-        $S_t$ & 包含位置、资源与天气的系统综合状态变量 $(i_t, W_t, F_t, \omega_t)$ [cite: 5709] \\
-        $V_t(i,W,F,\omega)$ & 价值函数，表示在第 $t$ 天特定状态下采取最优策略的最大期望最终收益 [cite: 5761, 5763] \\
+        $x_{i,t}$ & 0-1 变量，若第 $t$ 天结束时玩家位于节点 $i$ 取1，否则取0  \\
+        $stay_t, move_t, mine_t$ & 0-1 变量，分别表示第 $t$ 天采取“停留”、“行走”或“挖矿”动作  \\
+        $BuyW_t, BuyF_t$ & 整数变量，第 $t$ 天在特定节点（起点或村庄）购买的水和食物箱数  \\
+        $W_0, F_0$ & 第 0 天在起点初始购买的水和食物箱数  \\
+        $W_t, F_t, M_t$ & 连续变量，第 $t$ 天（结束或决策时）的水量、食物量和资金量  \\
+        $a_t$ & 玩家在第 $t$ 天选择采取的离散动作  \\
+        $i_t, \omega_t$ & 第 $t$ 天玩家所在的节点以及当天的天气状态  \\
+        $S_t$ & 包含位置、资源与天气的系统综合状态变量 $(i_t, W_t, F_t, \omega_t)$  \\
+        $V_t(i,W,F,\omega)$ & 价值函数，表示在第 $t$ 天特定状态下采取最优策略的最大期望最终收益  \\
         \midrule
         \multicolumn{2}{c}{\textbf{常量与模型参数}} \\
         \midrule
-        $p_W, p_F$ & 水和食物的基准价格（元/箱） [cite: 5674] \\
-        $C_W, C_F$ 或 $c_W^{(\omega)}, c_F^{(\omega)}$ & 特定天气状态 $\omega$ 下，水和食物的基础消耗量（箱） [cite: 5695, 5742] \\
-        $\Delta W_t, \Delta F_t$ & 第 $t$ 天采取动作后水和食物的实际消耗量 [cite: 5743] \\
-        $I_{base}, I$ & 在矿山挖矿的基础收益（元/天） [cite: 5698, 5783] \\
-        $\lambda(a_t)$ & 动作 $a_t$ 对应的资源消耗倍率（1, 2, 或 3倍） [cite: 5744] \\
-        $\mathbb{P}(\omega)$ 或 $p_1, p_2$ & 天气状态 $\omega$ 发生的先验概率 [cite: 5723, 5806] \\
-        $K$ & 充分大的正常数（用于大M法将逻辑条件线性化） [cite: 5690] \\
-        $R(i, W, F, \omega, a)$ & 在特定状态下执行动作 $a$ 获得的即时收益 [cite: 5772] \\
-        $\mathbb{E}[\cdot]$ & 对未来随机天气的期望算子 [cite: 5774] \\
+        $p_W, p_F$ & 水和食物的基准价格（元/箱）\\
+        $C_W, C_F$ 或 $c_W^{(\omega)}, c_F^{(\omega)}$ & 特定天气状态 $\omega$ 下，水和食物的基础消耗量（箱）  \\
+        $\Delta W_t, \Delta F_t$ & 第 $t$ 天采取动作后水和食物的实际消耗量  \\
+        $I_{base}, I$ & 在矿山挖矿的基础收益（元/天）  \\
+        $\lambda(a_t)$ & 动作 $a_t$ 对应的资源消耗倍率（1, 2, 或 3倍） \\
+        $\mathbb{P}(\omega)$ 或 $p_1, p_2$ & 天气状态 $\omega$ 发生的先验概率  \\
+        $K$ & 充分大的正常数（用于大M法将逻辑条件线性化）  \\
+        $R(i, W, F, \omega, a)$ & 在特定状态下执行动作 $a$ 获得的即时收益  \\
+        $\mathbb{E}[\cdot]$ & 对未来随机天气的期望算子  \\
         \bottomrule
     \end{tabular}
 \end{table}
-\end{samepage}
 \clearpage
 \section{模型的建立与求解}
+\subsection{问题一模型建立}
 
-\subsection{问题1：全局天气已知下的资金最优策略}
 
-针对问题一（单人、全局天气已知），我们以最终保留资金最大化为目标，将复杂的物理规则转化为代数不等式，构建了混合整数线性规划（MILP）模型。
+\subsubsection{模型思路}
 
-\subsubsection{决策变量的设定}
-为了精确刻画玩家的时空状态与资源流转，我们设定以下三类变量：
-\begin{itemize}
-    \item \textbf{位置变量：} 设 $x_{i,t} \in \{0,1\}$ 为 0-1 变量，若玩家在第 $t$ 天结束时位于节点 $i$，则 $x_{i,t} = 1$，否则为 $0$。
-    \item \textbf{动作变量：} 设 $stay_t, move_t, mine_t \in \{0,1\}$ 分别表示玩家在第 $t$ 天选择“停留”、“行走”或“挖矿”。
-    \item \textbf{状态与交易变量：} 设连续变量 $W_t, F_t, M_t$ 分别表示第 $t$ 天结束时的水量、食物量和资金量；设整数变量 $BuyW_t, BuyF_t$ 分别表示第 $t$ 天购买的水和食物箱数。
-\end{itemize}
+将沙漠地图抽象为无向图
+\[
+G=(V,E),
+\]
+其中，$V=\{1,2,\dots,n\}$ 表示地图中的区域节点集合，$E$ 表示节点之间的相邻关系。若节点 $i$ 与节点 $j$ 相邻，则玩家可以在一天内从 $i$ 移动到 $j$；若不相邻，则不能直接到达。
+
+在此基础上，以“天”为决策阶段，对玩家每天的位置、行动、资源与资金变化进行描述。由于天气序列已知，问题一可建模为一个混合整数线性规划模型，以到达终点时的总资金最大为目标，对路径选择、行动安排和资源配置进行联合优化。
+
+
+
+\subsubsection{变量定义}
+
+\noindent\textbf{位置变量：}
+
+定义二元变量
+\[
+x_{t,i}=
+\begin{cases}
+1, & \text{若第 } t \text{ 天结束时玩家位于节点 } i,\\
+0, & \text{否则},
+\end{cases}
+\qquad t=0,1,\dots,T,\ i\in V.
+\]
+
+\noindent\textbf{行动变量：}
+
+定义
+\[
+y_t^{\mathrm{stay}},\quad y_t^{\mathrm{move}},\quad y_t^{\mathrm{mine}}\in\{0,1\},
+\qquad t=1,2,\dots,T,
+\]
+分别表示第 $t$ 天是否选择停留、移动或挖矿。由于每天只能执行一种主要行动，因此三者满足互斥关系。
+
+\noindent\textbf{资源状态变量：}
+
+定义
+\[
+W_t \ge 0,\qquad F_t \ge 0,\qquad M_t \ge 0,
+\]
+分别表示第 $t$ 天结束后玩家剩余的水量、食物量和资金。
+
+\noindent\textbf{购买变量：}
+
+定义
+\[
+u_t^w\ge 0,\qquad u_t^f\ge 0,
+\]
+分别表示第 $t$ 天购买的水量和食物量。其中，第 $0$ 天的购买为起点初始采购，其余天数若发生购买，则表示在村庄处的补给行为。
 
 \subsubsection{目标函数}
-我们的优化目标是使得游戏结束（第 $T$ 天）时的总资产（含物资折现）最大化。根据规则，终点剩余物资可以基准价的 0.5 倍退回。目标函数为：
-$$ \max Z = M_T + 0.5 \cdot p_W W_T + 0.5 \cdot p_F F_T $$
-其中，$p_W$ 与 $p_F$ 分别为水和食物的基准价格。
 
-\subsubsection{约束条件推导}
+题目规定，玩家到达终点后可将剩余的水和食物按基准价格的一半退回。因此，终点时的总资金应由剩余现金与剩余物资折现两部分组成。目标函数为
+\[
+\max Z=M_T+\frac{c_w}{2}W_T+\frac{c_f}{2}F_T.
+\]
 
-\textbf{1. 动作互斥与空间拓扑约束} \\
-每天玩家必须且只能执行一种动作，且同一天只能位于一个节点：
-$$ stay_t + move_t + mine_t = 1 $$
-$$ \sum_{i \in V} x_{i,t} = 1 $$
-玩家若要移动，必须沿着相邻边进行。设 $N(i)$ 为节点 $i$ 的相邻节点集合，状态转移必须满足：
-$$ x_{i,t} \le x_{i,t-1} + \sum_{j \in N(i)} x_{j,t-1} $$
+\subsubsection{约束条件}
 
-\textbf{2. 天气与特殊动作约束} \\
-设第 $t$ 天的天气状态为 $Weather_t$（1为晴朗，2为高温，3为沙暴）。当遇到沙暴时，禁止移动：
-$$ \text{若 } Weather_t = 3 \text{, 则 } move_t = 0 $$
-同时，玩家只有前一天处于矿山集合 $S_{mine}$ 中，当天才能进行挖矿动作：
-$$ mine_t \le \sum_{m \in S_{mine}} x_{m,t-1} $$
+\noindent\textbf{初始状态约束：}
 
-\textbf{3. 村庄交易的线性化约束（大M法）} \\
-玩家仅能在处于村庄集合 $S_{village}$ 时购买物资。为了避免变量相乘导致的非线性，引入充分大的正常数 $K$，建立约束：
-$$ BuyW_t + BuyF_t \le K \sum_{v \in S_{village}} x_{v,t} $$
+第 $0$ 天玩家位于起点，且只能在起点进行一次初始购买，有
+\[
+x_{0,S}=1,
+\]
+\[
+x_{0,i}=0,\qquad i\in V,\ i\neq S,
+\]
+\[
+W_0=u_0^w,\qquad F_0=u_0^f,
+\]
+\[
+M_0^{\prime}=M_0-c_wu_0^w-c_fu_0^f.
+\]
+同时，初始购买后需满足负重约束：
+\[
+g_wW_0+g_fF_0\le B.
+\]
 
-\textbf{4. 负重与状态转移约束} \\
-水（3 kg/箱）和食物（2 kg/箱）的总质量不能超过 1200 kg 负重上限：
-$$ 3 W_t + 2 F_t \le 1200 $$
-每日物资储备由前日余量、当日购买量及动作消耗量决定（设 $C_W, C_F$ 为基于天气的基础消耗）：
-$$ W_t = W_{t-1} + BuyW_t - C_W (stay_t + 2 move_t + 3 mine_t) $$
-$$ F_t = F_{t-1} + BuyF_t - C_F (stay_t + 2 move_t + 3 mine_t) $$
-资金更新则需考虑挖矿的基础收益 $I_{base}$ 及村庄的双倍购买花销：
-$$ M_t = M_{t-1} + mine_t \cdot I_{base} - 2 (p_W BuyW_t + p_F BuyF_t) $$
+\noindent\textbf{位置唯一性约束：}
 
-\subsubsection{模型求解与结果分析}
-利用 Python 中的 PuLP 库调用底层运筹学求解器对上述 MILP 模型进行求解。
+任意一天结束时，玩家只能位于一个节点：
+\[
+\sum_{i\in V}x_{t,i}=1,\qquad t=0,1,\dots,T.
+\]
 
-\textbf{第一关求解结果：}
-在第一关的设定下，求解器寻找到的理论最优策略可保留最高资金为 10470 元。
-最优路径策略为玩家在第 0 天于起点购买 172 箱水 和 333 箱食物，
-随后经 25→24→23→21→9→15→14→12 到达 12 号矿山，并在矿山进行 6 日挖矿以积累资金；
-期间在第 8 天于 15 号村庄补充 163 箱水。
-此后玩家于第 21 天再次到达 15 号村庄，补充 36 箱水 和 16 箱食物，最终于第 24 天安全抵达 27 号终点，最终资金为 10470 元。
-\textbf{第二关求解结果：}
-在第二关的设定下，求解器寻找到的理论最优策略可保留最高资金为 \textbf{12730 元}。
-最优路径策略为玩家在第0天于起点购买 130 箱水和 405 箱食物，随后前往 55 号矿山进行多日连续挖矿以积累资金，
-最终在第19天途径 62 号村庄补充 174 箱水和 86 箱食物后，再在 55 号矿山挖矿到第 28 天，并于第30天安全抵达 64 号终点且水与食物恰好耗尽。
+\noindent\textbf{行动唯一性约束：}
 
+每天只能执行一种主要行动：
+\[
+y_t^{\mathrm{stay}}+y_t^{\mathrm{move}}+y_t^{\mathrm{mine}}=1,\qquad t=1,2,\dots,T.
+\]
+
+\noindent\textbf{位置移动约束：}
+
+若第 $t$ 天选择移动，则玩家只能从前一天所在节点移动到相邻节点；若选择停留或挖矿，则当天结束时位置不变。故有
+\[
+x_{t,j}\le x_{t-1,j}+\sum_{i:(i,j)\in E}x_{t-1,i},\qquad \forall j\in V,\ t=1,2,\dots,T.
+\]
+
+进一步地，可通过动作变量约束位置变化方式：
+\[
+y_t^{\mathrm{stay}}+y_t^{\mathrm{mine}}=1 \Longrightarrow x_{t,i}=x_{t-1,i},\qquad \forall i\in V,
+\]
+\[
+y_t^{\mathrm{move}}=1 \Longrightarrow x_{t,i}\neq x_{t-1,i}\ \text{且仅能移动至相邻节点}.
+\]
+
+\noindent\textbf{天气约束：}
+
+设第 $t$ 天天气记为 $\omega_t$。根据题意，若当天为沙暴，则玩家必须原地停留，不能移动。因此有
+\[
+\omega_t=\text{沙暴} \Longrightarrow y_t^{\mathrm{move}}=0.
+\]
+
+\noindent\textbf{挖矿约束：}
+
+根据题目规则，只有在矿山停留时才可挖矿，且到达矿山当天不能挖矿。因此：
+\[
+y_t^{\mathrm{mine}}\le \sum_{i\in V_m}x_{t-1,i},\qquad t=1,2,\dots,T,
+\]
+即第 $t-1$ 天已经位于矿山时，第 $t$ 天才允许挖矿。此外，挖矿意味着当天位置不变。
+
+\noindent\textbf{购买约束：}
+
+起点只能在第 $0$ 天购买一次；对于 $t\ge 1$，只有当玩家位于村庄时才允许购买资源，因此可写为
+\[
+u_t^w+u_t^f \le L\sum_{i\in V_c}x_{t,i},\qquad t=1,2,\dots,T,
+\]
+其中 $L$ 为足够大的常数。该约束保证只有在村庄节点时购买量才可能为正。
+
+\noindent\textbf{资源动态平衡约束：}
+
+设第 $t$ 天在当前天气下停留时水和食物的基础消耗量分别为 $d_{w,t}$ 和 $d_{f,t}$。根据题意：
+
+\begin{itemize}
+    \item 停留消耗基础消耗量的 $1$ 倍；
+    \item 移动消耗基础消耗量的 $2$ 倍；
+    \item 挖矿消耗基础消耗量的 $3$ 倍。
+\end{itemize}
+
+因此，第 $t$ 天的实际消耗量分别为
+\[
+C_t^w=d_{w,t}\bigl(y_t^{\mathrm{stay}}+2y_t^{\mathrm{move}}+3y_t^{\mathrm{mine}}\bigr),
+\]
+\[
+C_t^f=d_{f,t}\bigl(y_t^{\mathrm{stay}}+2y_t^{\mathrm{move}}+3y_t^{\mathrm{mine}}\bigr).
+\]
+
+相应的资源动态平衡方程为
+\[
+W_t=W_{t-1}-C_t^w+u_t^w,
+\]
+\[
+F_t=F_{t-1}-C_t^f+u_t^f,
+\qquad t=1,2,\dots,T.
+\]
+
+同时要求任意时刻资源非负：
+\[
+W_t\ge 0,\qquad F_t\ge 0,\qquad t=0,1,\dots,T.
+\]
+
+\noindent\textbf{资金平衡约束：}
+
+第 $0$ 天在起点购买物资时按基准价格扣除资金；第 $t\ge 1$ 天若在村庄购买物资，则按基准价格的 $2$ 倍支付；若第 $t$ 天挖矿，则获得基础收益 $R$。因此资金动态方程为
+\[
+M_t=M_{t-1}-2c_wu_t^w-2c_fu_t^f+Ry_t^{\mathrm{mine}},
+\qquad t=1,2,\dots,T.
+\]
+
+同时要求任意时刻剩余资金非负：
+\[
+M_t\ge 0,\qquad t=0,1,\dots,T.
+\]
+
+\noindent\textbf{负重约束：}
+
+任意一天结束后，玩家携带的水和食物总质量不得超过负重上限：
+\[
+g_wW_t+g_fF_t\le B,\qquad t=0,1,\dots,T.
+\]
+
+\noindent\textbf{终点约束：}
+
+玩家必须在截止日期内到达终点，因此要求在最终时刻满足
+\[
+x_{T,D}=1.
+\]
+
+若进一步考虑“到达即结束”的情形，则可在程序求解中加入终点吸收状态，使玩家一旦到达终点后不再继续消耗资源。
+
+\subsubsection{问题一的优化模型}
+
+综上，问题一可归结为如下混合整数线性规划模型：
+\[
+\max Z=M_T+\frac{c_w}{2}W_T+\frac{c_f}{2}F_T
+\]
+\[
+\text{s.t.}
+\]
+\[
+x_{0,S}=1,\qquad x_{0,i}=0\ (i\neq S),
+\]
+\[
+\sum_{i\in V}x_{t,i}=1,\qquad t=0,1,\dots,T,
+\]
+\[
+y_t^{\mathrm{stay}}+y_t^{\mathrm{move}}+y_t^{\mathrm{mine}}=1,\qquad t=1,2,\dots,T,
+\]
+\[
+x_{t,j}\le x_{t-1,j}+\sum_{i:(i,j)\in E}x_{t-1,i},\qquad \forall j\in V,
+\]
+\[
+\omega_t=\text{沙暴} \Longrightarrow y_t^{\mathrm{move}}=0,
+\]
+\[
+y_t^{\mathrm{mine}}\le \sum_{i\in V_m}x_{t-1,i},
+\]
+\[
+u_t^w+u_t^f \le L\sum_{i\in V_c}x_{t,i},
+\]
+\[
+W_t=W_{t-1}-d_{w,t}\bigl(y_t^{\mathrm{stay}}+2y_t^{\mathrm{move}}+3y_t^{\mathrm{mine}}\bigr)+u_t^w,
+\]
+\[
+F_t=F_{t-1}-d_{f,t}\bigl(y_t^{\mathrm{stay}}+2y_t^{\mathrm{move}}+3y_t^{\mathrm{mine}}\bigr)+u_t^f,
+\]
+\[
+M_t=M_{t-1}-2c_wu_t^w-2c_fu_t^f+Ry_t^{\mathrm{mine}},
+\]
+\[
+g_wW_t+g_fF_t\le B,
+\]
+\[
+W_t\ge 0,\qquad F_t\ge 0,\qquad M_t\ge 0,
+\]
+\[
+x_{T,D}=1,
+\]
+\[
+x_{t,i}\in\{0,1\},\quad y_t^{\mathrm{stay}},y_t^{\mathrm{move}},y_t^{\mathrm{mine}}\in\{0,1\},
+\]
+\[
+u_t^w,u_t^f\in\mathbb{Z}_{\ge 0}.
+\]
+
+\subsubsection{求解思路}
+
+由于问题一中的天气序列、地图结构及资源参数均已知，故上述模型是一个确定性优化模型。
+求解时，先根据附件地图建立邻接关系，再构造位置变量、行动变量、购买变量以及资源和资金状态变量，
+随后将目标函数与各类约束输入整数规划求解器进行求解。最终即可得到最优路径、每天的行动方案以及对应的物资购买策略。
+从模型结构上看，该模型同时考虑了路径选择、资源配置与收益计算，能够统一描述玩家在已知天气条件下的最优穿越过程，因此适合作为问题一的一般模型。
 \subsection{问题2：天气待定下的资金最优策略}
 
 针对问题二，题目不再给出完整确定的天气序列，而是仅能根据历史统计信息获得不同天气出现的先验概率。因此，相较于问题一中“全局天气完全已知”的确定性优化环境，问题二转化为一个\textbf{带随机环境演化的多阶段序贯决策问题}。在该问题中，玩家在每日决策时只能观察到\textbf{当天的天气状态}，却无法预先得知未来各天的具体天气，因此必须在不确定环境下动态选择“停留”“行走”或“挖矿”等动作，使得从当前时刻到游戏结束的\textbf{期望最终保留资金}最大。
